@@ -261,6 +261,5 @@ The processor polls `GET /bookings` every **30 seconds** (default). This value i
 - The PMS simulator is the authoritative source; no bookings originate in the processor.
 - `updated_at` from the PMS is treated as the conflict-resolution timestamp. A record with an older `updated_at` can never overwrite a newer one.
 - The `booking_history` table is append-only. A new row is inserted only when the incoming `updated_at` is strictly newer than the most recent entry — this prevents duplicate history rows from repeated identical payloads.
-- The polling interval is set to **30 seconds** as the default. See `architecture.md` for the reasoning.
 - The Next.js app talks directly to the Node.js API. No BFF or API proxy layer is used.
 - MySQL millisecond precision (`DATETIME(3)`) is used throughout to avoid timestamp collisions on rapid updates.
