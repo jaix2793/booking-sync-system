@@ -250,7 +250,13 @@ booking-sync-system/
 
 ---
 
-## 6. Assumptions
+## 6. Polling Interval
+ 
+The processor polls `GET /bookings` every **30 seconds** (default). This value is set via `POLL_INTERVAL_MS` in `.env` and can be overridden without a code change.
+ 
+**Why 30 seconds:** The PMS simulator introduces up to 800 ms of network latency per call and mutates booking statuses on every 3rd request. Polling more aggressively than every few seconds would add load with negligible data gain — booking states in a property management context don't change in real time. 30 seconds means any status change surfaces on the dashboard within at most one minute, which is a reasonable operational window. For a production integration against a real PMS, this would typically be relaxed further (e.g., 5 minutes) and supplemented by a webhook for time-critical events like cancellations.
+
+## 7. Assumptions
 
 - The PMS simulator is the authoritative source; no bookings originate in the processor.
 - `updated_at` from the PMS is treated as the conflict-resolution timestamp. A record with an older `updated_at` can never overwrite a newer one.
