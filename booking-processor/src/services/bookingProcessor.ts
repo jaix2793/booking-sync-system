@@ -49,19 +49,22 @@ export async function processBookingEvent(data: any) {
         return;
       }
 
-      await conn.execute(
-        `INSERT IGNORE INTO booking_history
-        (booking_id,guest_name,check_in,check_out,status,updated_at)
-        VALUES(?,?,?,?,?,?)`,
-        [
-          data.id,
-          data.guest_name,
-          data.check_in,
-          data.check_out,
-          data.status,
-          incoming,
-        ],
-      );
+      // Only log history when status actually changes
+      if (data.status !== existing.status) {
+        await conn.execute(
+          `INSERT IGNORE INTO booking_history
+          (booking_id,guest_name,check_in,check_out,status,updated_at)
+          VALUES(?,?,?,?,?,?)`,
+          [
+            data.id,
+            data.guest_name,
+            data.check_in,
+            data.check_out,
+            data.status,
+            incoming,
+          ],
+        );
+      }
 
       await conn.execute(
         `UPDATE bookings

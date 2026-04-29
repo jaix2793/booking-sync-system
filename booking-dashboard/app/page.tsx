@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Booking } from '@/types';
-import { fetchBookings, BookingFilters } from '@/lib/api';
+import { fetchBookings, BookingFilters, fetchStats } from '@/lib/api';
 import { StatsBar } from '@/components/StatsBar';
 import { Filters, FilterState } from '@/components/Filters';
 import { BookingsTable } from '@/components/BookingsTable';
@@ -102,12 +102,15 @@ export default function DashboardPage() {
   // ---------------------------------------------------
   const loadStats = useCallback(async () => {
     try {
-      const res = await fetchBookings({
-        page: 1,
-        limit: 1000, // enough for assignment demo
-      });
-
-      setStatsBookings(res.data);
+      const stats = await fetchStats();
+      // Convert { total, perStatus } into a shape StatsBar can consume
+      const synthetic: Booking[] = [];
+      for (const [status, count] of Object.entries(stats.perStatus)) {
+        for (let i = 0; i < count; i++) {
+          synthetic.push({ status } as Booking);
+        }
+      }
+      setStatsBookings(synthetic);
     } catch {
       // ignore silently
     }

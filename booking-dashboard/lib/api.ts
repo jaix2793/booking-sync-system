@@ -65,3 +65,19 @@ export async function fetchBooking(
 
   return res.json();
 }
+
+
+export interface BookingStats {
+  total: number;
+  perStatus: Record<string, number>;
+}
+
+export async function fetchStats(): Promise<BookingStats> {
+  const res = await fetch(`${BASE_URL}/bookings/stats`, {
+    cache: 'no-store',
+  });
+
+  if (!res.ok) throw new Error('Failed to fetch stats');
+
+  return res.json();
+}

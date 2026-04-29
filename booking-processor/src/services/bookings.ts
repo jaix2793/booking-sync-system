@@ -96,3 +96,22 @@ export async function findBookingById(id: string) {
     history,
   };
 }
+
+
+export async function getBookingStats() {
+  const [rows]: any = await pool.execute(`
+    SELECT status, COUNT(*) AS count
+    FROM bookings
+    GROUP BY status
+  `);
+
+  const perStatus: Record<string, number> = {};
+  let total = 0;
+
+  for (const row of rows) {
+    perStatus[row.status] = Number(row.count);
+    total += Number(row.count);
+  }
+
+  return { total, perStatus };
+}

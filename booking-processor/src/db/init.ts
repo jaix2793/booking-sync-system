@@ -16,14 +16,17 @@ export async function initDB() {
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS booking_history (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      booking_id VARCHAR(8),
+      booking_id VARCHAR(8) NOT NULL,
       guest_name VARCHAR(255),
       check_in DATE,
       check_out DATE,
       status VARCHAR(50),
       updated_at DATETIME(3),
       recorded_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
-      UNIQUE KEY uq_booking_update (booking_id, updated_at)
+      UNIQUE KEY uq_booking_update (booking_id, updated_at),
+      CONSTRAINT fk_history_booking
+        FOREIGN KEY (booking_id) REFERENCES bookings(id)
+        ON DELETE CASCADE
     )
   `);
 

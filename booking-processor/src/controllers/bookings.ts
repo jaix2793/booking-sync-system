@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { findAllBookings, findBookingById } from '../services/bookings';
+import { findAllBookings, findBookingById, getBookingStats } from '../services/bookings';
 
 export const getAllBookings = async (
   req: Request,
@@ -54,6 +54,19 @@ export const getBookingById = async (
       return;
     }
 
+    res.json(data);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+export const getStats = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const data = await getBookingStats();
     res.json(data);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
